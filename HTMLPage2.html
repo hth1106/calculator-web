@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算器 API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+
+        input {
+            margin-bottom: 10px;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>计算器 API</h1>
+    <div>
+        <label for="a">数字 A:</label>
+        <input type="number" id="a" placeholder="请输入数字 A" />
+    </div>
+    <div>
+        <label for="b">数字 B:</label>
+        <input type="number" id="b" placeholder="请输入数字 B" />
+    </div>
+    <div>
+        <button onclick="performOperation('add')">加法</button>
+        <button onclick="performOperation('subtract')">减法</button>
+        <button onclick="performOperation('multiply')">乘法</button>
+        <button onclick="performOperation('divide')">除法</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        async function performOperation(operation) {
+            const a = parseFloat(document.getElementById('a').value);
+            const b = parseFloat(document.getElementById('b').value);
+            if (isNaN(a) || isNaN(b)) {
+                alert("请输入有效的数字");
+                return;
+            }
+
+            let url = `https://localhost:7011/api/calculator/${operation}?a=${a}&b=${b}`;
+
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('result').innerText = `结果: ${data.result}`;
+                } else {
+                    const error = await response.json();
+                    document.getElementById('result').innerText = `错误: ${error.error}`;
+                }
+            } catch (error) {
+                console.error("请求失败:", error);
+                document.getElementById('result').innerText = '请求失败，请重试。';
+            }
+        }
+    </script>
+</body>
+</html>
